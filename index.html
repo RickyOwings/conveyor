@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0 user-scalable=false">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD" crossorigin="anonymous">
+    <link rel="icon" type="image/x-icon" href="images/favicon.ico">
+    <link rel="stylesheet" href="style.css">
+    
+    <title>Conveyor</title>
+</head>
+<body>
+    <div id="userInterface">
+        <div class="UIElement">
+            <h1 class="clickable"><a data-bs-toggle="collapse" href="#saveLoad" role="button" aria-expanded="false" aria-controls="saveLoad" >--- Save/Load ---</a></h1>
+            <div class="panel-collapse collapsing in bolded" id="saveLoad">
+                <h2>Save</h2>
+                <button class="clickable" onclick="downloadGame()">Save</button>
+                <input class="clickable"type="text" placeholder="savefile name" id="saveFileName">
+                <h2>Load</h2>
+                <form id="loadGameFromFile" onsubmit="return false">
+                    <input class="clickable"name="file" ACCEPT="application/json" type="file" id="saveFileInput"/><br>
+                    <button class="clickable"name="load" onclick="loadGame()">Load Game</button>
+                </form>
+            </div>
+            <h1 class="clickable"><a data-bs-toggle="collapse" href="#tiles" role="button" aria-expanded="false" aria-controls="tiles" >--- Build Menu ---</a></h1>
+            <div class="panel-collapse collapsing in" id="tiles">
+                <h2 class="remover" onclick="removeMode();"><a href="#">&#128465 Remove</a></h2>
+                <h2 class="clickable" data-bs-toggle="collapse" href="#tier0" role="button" aria-expanded="true" aria-controls="tier0">- Tier 0 -</h2>
+                <div id="tier0" class="panel-collapse collapsing out">
+                    <table>
+                        <tr>
+                            <td class="center textClose bolded"><br>Coal Drill<br>
+                            </td>
+                            <td class="center textClose bolded">Depot<br>Limit 1</td>
+                        </tr>
+                        <tr>
+                            <td class="center"><img class="clickable" src="images/coal_drill.gif" onclick="placeMode('images/coal_drill.gif')"></td>
+                            <td class="center"><img class="clickable" src="images/depot.png" onclick="placeMode('images/depot.png')"></td>
+                        </tr>
+                        <tr>
+                            <td class="center textClose bolded">Drills Coal</td>
+                            <td class="center textClose bolded">Stores Items</td>
+                        </tr>
+                    </table>
+                    <br>
+                    <div class="textClose bolded">
+                        Conveyors<br>
+                        Price: <img class="iconImg" src="/images/coal_ore_icon.png"> x 5
+                    </div>
+                    <table>
+                        <tr>
+                            <td class="center textClose bolded">East</td>
+                            <td class="center textClose bolded">West</td>
+                            <td class="center textClose bolded">North</td>
+                            <td class="center textClose bolded">South</td>
+                        </tr>
+                        <tr>
+                            <td class="center"><img class="clickable" src="images/conveyor_east.gif" onclick="placeMode('images/conveyor_east.gif')"></td>
+                            <td class="center"><img class="clickable" src="images/conveyor_west.gif" onclick="placeMode('images/conveyor_west.gif')"></td>
+                            <td class="center"><img class="clickable" src="images/conveyor_north.gif" onclick="placeMode('images/conveyor_north.gif')"></td>
+                            <td class="center"><img class="clickable" src="images/conveyor_south.gif" onclick="placeMode('images/conveyor_south.gif')"></td>
+                        </tr>
+                    </table>
+                    <div class="textClose bolded">Moves items 1 tile over</div>
+                </div>
+
+
+                <h2 class="clickable" data-bs-toggle="collapse" href="#tier1" role="button" aria-expanded="false" aria-controls="tier1">- Tier 1 -</h2>
+                <div id="tier1" class="panel-collapse collapsing in">
+                    <table>
+                        <tr>
+                            <td class="center textClose bolded">Copper Drill<br>Price: <img class="iconImg" src="/images/coal_ore_icon.png"> x 100</td>
+                            <td class="center textClose bolded">Smelter<br>Price: <img class="iconImg" src="/images/coal_ore_icon.png"> x 50</td>
+                            <td class="center textClose bolded">Splitter<br>Price: <img class="iconImg" src="/images/copper_ingot_icon.png"> x 10 </td>
+                        </tr>
+                        <tr>
+                            <td class="center"><img class="clickable"src="images/copper_drill.gif" onclick="placeMode('images/copper_drill.gif')"></td>
+                            <td class="center"><img class="clickable"src="images/smelter.gif" onclick="placeMode('images/smelter.gif')"></td>
+                            <td class="center"><img class="clickable"src="images/splitter.png" onclick="placeMode('images/splitter.png')"></td>
+                        </tr>
+                        <tr>
+                            <td class="center textClose bolded">Drills Copper Ore</td>
+                            <td class="center textClose bolded">Takes ore+coal<br>to make ingots</td>
+                            <td class="center textClose bolded">Splits items over<br>available directions</td>
+                        </tr>
+                    </table>
+                </div>
+
+                <h2 class="clickable" data-bs-toggle="collapse" href="#tier2" role="button" aria-expanded="false" aria-controls="tier2">- Tier 2 -</h2>
+                <div id="tier2" class="panel-collapse collapsing in">
+                    <table>
+                        <tr>
+                            <td class="center textClose bolded">Iron Drill<br>Price: <img class="iconImg" src="/images/copper_ingot_icon.png"> x 200</td>
+                        </tr>
+                        <tr>
+                            <td class="center"><img class="clickable"src="images/iron_drill.gif" onclick="placeMode('images/iron_drill.gif')"></td>
+                        </tr>
+                    </table>
+                    <div class="textClose bolded">Launchers<br>Price: <img class="iconImg" src="/images/iron_ingot_icon.png"> x 10</div>
+                    <table>
+                        <tr>
+                            <td class="center textClose bolded">East</td>
+                            <td class="center textClose bolded">West</td>
+                            <td class="center textClose bolded">North</td>
+                            <td class="center textClose bolded">South</td>
+                        </tr>
+                        <tr>
+                            <td class="center"><img class="clickable"src="images/launcher_east.gif" onclick="placeMode('images/launcher_east.gif')"></td>
+                            <td class="center"><img class="clickable"src="images/launcher_west.gif" onclick="placeMode('images/launcher_west.gif')"></td>
+                            <td class="center"><img class="clickable"src="images/launcher_north.gif" onclick="placeMode('images/launcher_north.gif')"></td>
+                            <td class="center"><img class="clickable"src="images/launcher_south.gif" onclick="placeMode('images/launcher_south.gif')"></td>
+                        </tr>
+                    </table>
+                    <div class="textClose bolded">Moves items 2 tiles over. Used to cross over conveyors and even deposit into smelters</div>
+                </div>
+                <h2 class="clickable" data-bs-toggle="collapse" href="#tier3" role="button" aria-expanded="false" aria-controls="tier3">- Tier 3 -</h2>
+                <div id="tier3" class="panel-collapse collapsing in">
+                    <table>
+                        <tr>
+                            <td class="center textClose bolded">Alloyer<br>Price: <img class="iconImg" src="/images/iron_ingot_icon.png"> x 400</td>
+                            <td class="center textClose bolded">Bronze Drill<br>Price: <img class="iconImg" src="/images/bronze_ingot_icon.png"> x 600</td>
+                        </tr>
+                        <tr>
+                            <td class="center"><img class="clickable"src="images/alloyer.gif" onclick="placeMode('images/alloyer.gif')"></td>
+                            <td class="center"><img class="clickable"src="images/bronze_drill.gif" onclick="placeMode('images/bronze_drill.gif')"></td>
+                        </tr>
+                        <tr>
+                            <td class="center textClose bolded">Takes <img class="iconImg" src="images/iron_ingot_icon.png">, <img class="iconImg" src="images/copper_ingot_icon.png">,<br> and <img class="iconImg" src="images/coal_ore_icon.png"> <br>to make <img class="iconImg" src="images/bronze_ingot_icon.png"> </td>
+                            <td class="center textClose bolded">Drills any ore faster<br><br></td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+            <h1 class="clickable"><a data-bs-toggle="collapse" href="#recipes" role="button" aria-expanded="false" aria-controls="about">--- How to ---</a></h1>
+            <div id="recipes" class="panel-collapse collapsing in">
+                <h2 class="clickable"><a data-bs-toggle="collapse" href="#drillerExamples" role="button" aria-expanded="false" aria-controls="drillerExamples">- Using <img src="images/coal_drill.gif"/><img src="images/copper_drill.gif"/><img src="images/iron_drill.gif"/><img src="images/bronze_drill.gif"/> -</a></h2>
+                <div id="drillerExamples" class="bolded largerText panel-collapse collapsing in">
+                    <img class="largerImg"src="images/placing_drill.gif"><br>
+                    <img class="largerImg"src="images/output_drill_1.gif"><br>
+                    <img class="largerImg"src="images/output_drill_2.gif"><br>
+                </div>
+                <h2 class="clickable"><a data-bs-toggle="collapse" href="#depotExamples" role="button" aria-expanded="false" aria-controls="depotExamples">- Using <img src="images/depot.png"/></a></h2>
+                <div id="depotExamples"class="bolded largerText panel-collapse collapsing in">
+                    <img class="largerImg"src="images/depot_example.gif"><br>
+                </div>
+                <h2 class="clickable"><a data-bs-toggle="collapse" href="#furnaceRecipes" role="button" aria-expanded="false" aria-controls="furnaceRecipes">- Using a <img src="images/smelter.gif"/> -</a></h2>
+                <div id="furnaceRecipes" class="bolded largerText panel-collapse collapsing in">
+                    <img class="largerImg"src="images/furnace_example.gif"><br>
+                    <img src="images/coal_ore.png"> + <img src="images/copper_ore.png"> = <img src="images/copper_ingot.png"><br>
+                    <img src="images/coal_ore.png"> + <img src="images/iron_ore.png"> = <img src="images/iron_ingot.png"><br>
+                </div>
+                <h2 class="clickable"><a data-bs-toggle="collapse" href="#alloyerRecipes" role="button" aria-expanded="false" aria-controls="alloyerRecipes">- Using a <img src="images/alloyer.gif"/> -</a></h2>
+                <div id="alloyerRecipes" class="bolded largerText panel-collapse collapsing in">
+                    <img class="largerImg"src="images/alloyer_example.gif"><br>
+                    <img src="images/iron_ingot.png"> + <img src="images/copper_ingot.png"> + <img src="images/coal_ore.png"> = <img src="images/bronze_ingot.png"><br>
+                </div>
+                <h2 class="clickable"><a data-bs-toggle="collapse" href="#launcherExamples" role="button" aria-expanded="false" aria-controls="launcherExamples">- Using a <img src="images/launcher_east.gif"/> -</a></h2>
+                <div id="launcherExamples" class="bolded largerText panel-collapse collapsing in">
+                    <img class="largerImg"src="images/launcher_example.gif"><br>
+                    <img class="largerImg"src="images/launcher_example_2.gif"><br>
+                </div>
+                <h2 class="clickable"><a data-bs-toggle="collapse" href="#splitterExamples" role="button" aria-expanded="false" aria-controls="splitterExamples">- Using a <img src="images/splitter.png"/> -</a></h2>
+                <div id="splitterExamples" class="bolded largerText panel-collapse collapsing in">
+                    <div class="textClose bolded">How use a splitter</div>
+                    <img class="largerImg"src="images/splitter_example.gif"><br>
+                    <div class="textClose bolded">How not to use a splitter<br>Don't use it as an input</div>
+                    <img class="largerImg"src="images/splitter_fail.gif"><br>
+                </div>
+            </div>
+            <h1 class="clickable"><a data-bs-toggle="collapse" href="#about" role="button" aria-expanded="false" aria-controls="about">--- About ---</a></h1>
+            <div class="panel-collapse collapsing in" id="about">
+                <h2 class="clickable" data-bs-toggle="collapse" href="#theGoal" role="button" aria-expanded="false" aria-controls="theGoal">- The Goal -</h2>
+                <div id="theGoal" class="panel-collapse collapsing in">
+                    <p>
+                        The goal of the game is to progress through the different items in the game. Make a goal for yourself and what you want to achieve
+                    </p>
+                    <p>
+                        There are several ore veins across the map. You can place down drills on those nodes in order to extract the ore from them (whether it be coal, iron, or copper). You can then take those ores and smelt them with a smelter, which needs 1 coal and 1 metallic ore (either copper or iron) to create an ingot. You can then take your newly created ingots and deposit them into a depot which will increment your ingot count on the top right corner.
+                    </p>
+                </div>
+                <h2 class="clickable"data-bs-toggle="collapse" href="#mechanics" role="button" aria-expanded="false" aria-controls="mechanics">- Mechanics -</h2>
+                <div id="mechanics" class="panel-collapse collapsing in">
+                    
+                    <h3>Conveyors</h3>
+                    <p>
+                        Conveyors will move an item to a target location based on which direction it is facing
+                    </p>
+                    <h3>Launchers</h3>
+                    <p>
+                        Launchers work the same as conveyors, but will jump over a tile
+                    </p>
+                    <h3>Anything That Outputs Something</h3>
+                    <p>
+                        If a particular tile outputs an item, then it will only output to a conveyor or launcher if they are not pointing towards said particular tile.
+                    </p>
+                    <p>
+                        This mechanic is interesting because you could have a conveyor adjecent to the smelter pointed 90 degrees in respect to the smelter and it would still output to it, compacting your designs
+                    </p>
+                    <p>
+                        Do be careful though! If you run a conveyor by a drill, even it if it is not facing outwards from it, it will output to that conveyor!
+                    </p>
+                    <p>
+                        If you have a tile that has multiple places where it could output to, it will randomly pick between the outputs that are available to it
+                    </p>
+                    <h3>Splitters</h3>
+                    <p>
+                        Splitters are basically just an output tile that's only purpose is transfer. It inherits the properties listed above.
+                    </p>
+                    <p>
+                        It is possible for a driller to output to a splitter if the splitter is adjacent to the driller
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="currencyRegion">
+        <table id="currencyTable">
+        </table>
+    </div>
+    <div id="controls">
+        pan with [middle mouse/shift/arrow keys] | zoom in/out with [scroll wheel/1 2/+ -] | click titles on left to expand out
+    </div>
+    <div id="game">
+        <div id="selector">
+            <div class="smaller">
+                <img id="selectorPrev" src="images/blank.png">
+            </div>
+        </div>
+        <div id="selectorLabel"></div>
+    </div>
+    <script src="game.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js" integrity="sha384-w76AqPfDkMBDXo30jS1Sgez6pr3x5MlQ1ZAGC+nuZB+EYdgRZgiwxhTBTkF7CXvN" crossorigin="anonymous"></script>
+</body>
+</html>
