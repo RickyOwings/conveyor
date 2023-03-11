@@ -1020,7 +1020,7 @@ function availableOutputs(x,y, symbol){
         }
     // check north
     if (isCoord(x, y - 1))
-        if (['>', '^', '<','=','s', ')', 'n', '('].includes(builds[x][y - 1])){
+        if (['>', '^', '<','=','s', ')', 'n', '(', 'd'].includes(builds[x][y - 1])){
             if (!(builds[x][y - 1] == 's' && checkIfFull(x, y - 1,symbol)))
                 if (items[x][y - 1] == undefined) outputs.push([x, y - 1]);
         }
