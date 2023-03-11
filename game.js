@@ -168,16 +168,16 @@ const game = document.getElementById("game");
 const selector = document.getElementById("selector");
 const selectorPrev = document.getElementById("selectorPrev");
 let selectMode = "place";
-let selectorSRC = 'images/blank.png';
+let selectorSRC = './images/blank.png';
 let isDepot = false;
 
 const itemURLDict = {
-    'c' : 'images/copper_ore.png',
-    'C' : 'images/copper_ingot.png',
-    'i' : 'images/iron_ore.png',
-    'I' : 'images/iron_ingot.png',
-    'f' : 'images/coal_ore.png',
-    'B' : 'images/bronze_ingot.png',
+    'c' : './images/copper_ore.png',
+    'C' : './images/copper_ingot.png',
+    'i' : './images/iron_ore.png',
+    'I' : './images/iron_ingot.png',
+    'f' : './images/coal_ore.png',
+    'B' : './images/bronze_ingot.png',
 }
 
 const drillerSpeeds = {
@@ -187,10 +187,10 @@ const drillerSpeeds = {
     'f' : 4, 
 }
 let drillsDict = {
-    'images/copper_drill.gif' : 'c',
-    'images/iron_drill.gif' : 'i',
-    'images/coal_drill.gif' : 'f',
-    'images/bronze_drill.gif' : 'b'
+    './images/copper_drill.gif' : 'c',
+    './images/iron_drill.gif' : 'i',
+    './images/coal_drill.gif' : 'f',
+    './images/bronze_drill.gif' : 'b'
 }
 let currency = {
     'f' : 0,
@@ -276,23 +276,23 @@ function urlToBuildingName(url){
 }
 
 const urlBuildingDict = {
-    'images/copper_drill.gif': 'c',
-    'images/iron_drill.gif': 'i',
-    'images/coal_drill.gif': 'f',
-    'images/bronze_drill.gif': 'b',
-    'images/smelter.gif': 's',
-    'images/depot.png': 'd',
-    'images/conveyor_east.gif': '>',
-    'images/conveyor_west.gif': '<',
-    'images/conveyor_north.gif': '^',
-    'images/conveyor_south.gif': 'v',
-    'images/launcher_east.gif': ')',
-    'images/launcher_west.gif': '(',
-    'images/launcher_north.gif': 'n',
-    'images/launcher_south.gif': 'u',
-    'images/splitter.png': '=',
-    'images/alloyer.gif': 'a',
-    'images/blank.png': undefined,
+    './images/copper_drill.gif': 'c',
+    './images/iron_drill.gif': 'i',
+    './images/coal_drill.gif': 'f',
+    './images/bronze_drill.gif': 'b',
+    './images/smelter.gif': 's',
+    './images/depot.png': 'd',
+    './images/conveyor_east.gif': '>',
+    './images/conveyor_west.gif': '<',
+    './images/conveyor_north.gif': '^',
+    './images/conveyor_south.gif': 'v',
+    './images/launcher_east.gif': ')',
+    './images/launcher_west.gif': '(',
+    './images/launcher_north.gif': 'n',
+    './images/launcher_south.gif': 'u',
+    './images/splitter.png': '=',
+    './images/alloyer.gif': 'a',
+    './images/blank.png': undefined,
 }
 
 let inverseBuildingDict = {
@@ -305,7 +305,7 @@ for(let k in urlBuildingDict){
 
 function removeMode(){
     label.innerHTML = "";
-    selectorPrev.src = "images/blank.png"
+    selectorPrev.src = "./images/blank.png"
     selectMode = "remover";
     selector.dataset.mode = "remover";
 }
@@ -315,8 +315,8 @@ const label = document.getElementById("selectorLabel");
 
 
 
-function placeMode(imgSrc = "images/blank.png"){
-    let labelText = imgSrc.replace("images/", "").replace(".gif", "").replace(".png", "").replace("blank", "").replace("_"," ");
+function placeMode(imgSrc = "./images/blank.png"){
+    let labelText = imgSrc.replace("./images/", "").replace(".gif", "").replace(".png", "").replace("blank", "").replace("_"," ");
     let asBuild = urlToBuildingName(imgSrc);
     let price = prices[asBuild];
     if (price!=undefined){
@@ -324,7 +324,7 @@ function placeMode(imgSrc = "images/blank.png"){
         for(let type in price){
             let typeText = itemURLDict[type];
             typeText = typeText
-                .replace("images/", "")
+                .replace("./images/", "")
                 .replace(".png", "");
             labelText+=`${price[type]} ${typeText}(s)`
         }
@@ -355,15 +355,15 @@ function place(){
 
 function placeTile(x, y, symbol){
     if (!isCoord(x,y)){
-        selectorPrev.src = '/images/out_of_range.png';
+        selectorPrev.src = './images/out_of_range.png';
         return;
     }
     if (!canPlace(x,y,symbol)){
-        selectorPrev.src = '/images/cant_place.png'
+        selectorPrev.src = './images/cant_place.png'
         return;
     }
     if (!canAfford(symbol)){
-        selectorPrev.src = '/images/poor.png';
+        selectorPrev.src = './images/poor.png';
         return;
     }
     if (depotLimit(symbol)) return;
@@ -523,21 +523,21 @@ function updateSelectorPos(event){
 window.addEventListener('keydown', (event)=>{
     let camMoved = false;
     switch(event.key){
-        case 'a': placeMode('images/conveyor_west.gif'); break;
-        case 'd': placeMode('images/conveyor_east.gif'); break;
-        case 'w': placeMode('images/conveyor_north.gif'); break;
-        case 's': placeMode('images/conveyor_south.gif'); break;
-        case 'c': placeMode('images/copper_drill.gif'); break;
-        case 'z': placeMode('images/iron_drill.gif'); break;
-        case 'h': placeMode('images/depot.png'); break;
-        case 'f': placeMode('images/smelter.gif'); break;
-        case 'i': placeMode('images/launcher_north.gif'); break;
-        case 'j': placeMode('images/launcher_west.gif'); break;
-        case 'k': placeMode('images/launcher_south.gif'); break;
-        case 'l': placeMode('images/launcher_east.gif'); break;
-        case 'x': placeMode('images/coal_drill.gif'); break;
-        case 'e': placeMode('images/splitter.png'); break;
-        case 'q': placeMode('images/depot.png'); break;
+        case 'a': placeMode('./images/conveyor_west.gif'); break;
+        case 'd': placeMode('./images/conveyor_east.gif'); break;
+        case 'w': placeMode('./images/conveyor_north.gif'); break;
+        case 's': placeMode('./images/conveyor_south.gif'); break;
+        case 'c': placeMode('./images/copper_drill.gif'); break;
+        case 'z': placeMode('./images/iron_drill.gif'); break;
+        case 'h': placeMode('./images/depot.png'); break;
+        case 'f': placeMode('./images/smelter.gif'); break;
+        case 'i': placeMode('./images/launcher_north.gif'); break;
+        case 'j': placeMode('./images/launcher_west.gif'); break;
+        case 'k': placeMode('./images/launcher_south.gif'); break;
+        case 'l': placeMode('./images/launcher_east.gif'); break;
+        case 'x': placeMode('./images/coal_drill.gif'); break;
+        case 'e': placeMode('./images/splitter.png'); break;
+        case 'q': placeMode('./images/depot.png'); break;
         case 'Shift': INPUT.mouse1 = true; break;
         case '1':
         case '=':
@@ -622,13 +622,13 @@ function initMapTiles(){
             let src;
             switch(map[x][y]){
                 case "c":
-                    src = "images/copper.png"
+                    src = "./images/copper.png"
                 break;
                 case "i":
-                    src = "images/iron.png"
+                    src = "./images/iron.png"
                 break;
                 case "f":
-                    src = "images/coal.png"
+                    src = "./images/coal.png"
                 break;
 
             }
