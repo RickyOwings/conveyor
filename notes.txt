@@ -1,0 +1,75 @@
+--- LEXICON DE BUILD TYPES AND SUCH ---
+
+    --- MAP ---
+        "c" = copper vein
+        "i" = iron vein
+
+    --- BUILDS ---
+        ** conveyors **
+
+        "<" = west-conveyor
+        ">" = east-conveyor
+        "^" = north-conveyor
+        "v" = south-conveyor
+
+        "=" = splitter
+            - cycles through available directions based on outgoing conveyors
+
+        ** launchers **
+        ")" = east-launcher
+        "(" = west-launcher
+        "u" = south-launcher
+        "n" = north-launcher
+
+
+        "d" = depot
+            - for stowage of processed items
+            - only get 1
+
+        ** drillers **
+        "c" = copper driller
+            - free, does not cost anything
+
+        "i" = iron driller
+            - costs 10 copper ingots
+
+
+        ** fabrication **
+
+        "s" = smelter
+            - for smelting ore into ingots
+            - free, does not cost anything
+
+        "a" = alloyer
+            - for combining two different metal ingots
+            - costs 20 iron ingots and 30 copper ingots
+
+        "S" = steel fabricator
+            - combines iron and coal to make steel
+            - costs 20 bronze ingots, 30 iron ingots, and 40 copper ingots 
+
+    --- ITEMS ---
+        ** tier 0 **
+        "f" = fuel ie coal
+
+        ** tier 1 **
+
+        "c" = copper ore 
+        "C" = copper ingot
+
+        ** tier 2 **
+
+        "i" = iron ore
+        "I" = iron ingot
+
+        ** tier 3 ** 
+        "B" = bronze ingot
+            - combining iron and copper together
+
+        ** tier 4 **
+        "S" = steel ingot
+            - combining iron and coal together
+
+    --- NOTES ---
+    the only kind of item that can be deposited is
+    an ingot, since that is used to make things

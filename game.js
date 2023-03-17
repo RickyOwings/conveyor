@@ -1,5 +1,14 @@
+// #region 2D Arrays
+
 const MAP_SIZE = 100;
 
+/** Takes in (x ,y) coord and returns
+ * if it is on the map
+ * 
+ * @param {number} x 
+ * @param {number} y 
+ * @returns {boolean}
+ */
 function isCoord(x,y){
     if (x < MAP_SIZE && x >= 0)
         if (y < MAP_SIZE && y >= 0) return true;
@@ -7,6 +16,11 @@ function isCoord(x,y){
 }
 
 
+
+/** takes in object with x, y and char values to init a 2DArray   
+ * @param  {Object} args 
+ * @returns 
+ */
 function create2DArray(...args){
     let temp = [];
     for(let i = 0; i < MAP_SIZE; i++)
@@ -20,12 +34,16 @@ function create2DArray(...args){
         if (arg.char.length != 1) throw 'char is not char';
         temp[arg.x][arg.y] = arg.char;
     } 
-
-
     return temp;
 }
 
 let randomLocations = [];
+/**
+ * takes in a char, and returns an object with random x, y position with char
+ * value of inputted char
+ * @param {String} char 
+ * @returns 
+ */
 function randomLocationObject(char){
     while (true){
         let x = Math.floor(Math.random() * 100);
@@ -59,87 +77,14 @@ let builds = create2DArray();
 let buildData = create2DArray();
 let items = create2DArray();
 
-/*
-    --- LEXICON DE BUILD TYPES AND SUCH ---
 
-    --- MAP ---
-        "c" = copper vein
-        "i" = iron vein
-
-    --- BUILDS ---
-        ** conveyors **
-
-        "<" = west-conveyor
-        ">" = east-conveyor
-        "^" = north-conveyor
-        "v" = south-conveyor
-
-        "=" = splitter
-            - cycles through available directions based on outgoing conveyors
-
-        ** launchers **
-        ")" = east-launcher
-        "(" = west-launcher
-        "u" = south-launcher
-        "n" = north-launcher
-
-
-        "d" = depot
-            - for stowage of processed items
-            - only get 1
-
-        ** drillers **
-        "c" = copper driller
-            - free, does not cost anything
-
-        "i" = iron driller
-            - costs 10 copper ingots
-
-
-        ** fabrication **
-
-        "s" = smelter
-            - for smelting ore into ingots
-            - free, does not cost anything
-
-        "a" = alloyer
-            - for combining two different metal ingots
-            - costs 20 iron ingots and 30 copper ingots
-
-        "S" = steel fabricator
-            - combines iron and coal to make steel
-            - costs 20 bronze ingots, 30 iron ingots, and 40 copper ingots 
-
-    --- ITEMS ---
-        ** tier 0 **
-        "f" = fuel ie coal
-
-        ** tier 1 **
-
-        "c" = copper ore 
-        "C" = copper ingot
-
-        ** tier 2 **
-
-        "i" = iron ore
-        "I" = iron ingot
-
-        ** tier 3 ** 
-        "B" = bronze ingot
-            - combining iron and copper together
-
-        ** tier 4 **
-        "S" = steel ingot
-            - combining iron and coal together
-
-    --- NOTES ---
-    the only kind of item that can be deposited is
-    an ingot, since that is used to make things
-*/
-
-
+/**
+ * Function that gets the map, builds, buildData, items, and currency
+ * stored in an object to simplify jsonify process 
+ * @returns 
+ */
 function getSaveObject(){
-    return{
+    return {
         "map" : map,
         "builds" : builds,
         "buildData" : buildData,
@@ -148,7 +93,9 @@ function getSaveObject(){
     }
 }
 
-
+/**
+ * Downloads the game state to a json file
+ */
 function downloadGame(){
     let saveName = document.getElementById("saveFileName").value;
     let a = document.createElement("a");
@@ -158,19 +105,51 @@ function downloadGame(){
     a.click();
 }
 
+//#endregion
 
 
 
-
+/**
+ * Div that all of the game elements are stored within
+ */
 const game = document.getElementById("game");
-
-
+/**
+ * A div that acts as a way for the user to visually see where they are
+ * placing a tile
+ */
 const selector = document.getElementById("selector");
+/**
+ * An img element within the selector that changes it's image based on what 
+ * building is selected
+ */
 const selectorPrev = document.getElementById("selectorPrev");
+/**
+ * A 'p' element within the selector that displays the name and price of the selected build
+ */
+const label = document.getElementById("selectorLabel");
+
+/**
+ * Represents which place mode the user is on. Can be either
+ * "place" or "remove"
+ */
 let selectMode = "place";
+/**
+ * What image the user has selected to place. It is initialized
+ * as "./images/blank.png"
+ */
 let selectorSRC = './images/blank.png';
+/**
+ * Boolean for determining if a depot has been placed.
+ * It hard caps the amout of depots to 1
+ */
 let isDepot = false;
 
+
+
+/**
+ * An object that stores all of the
+ * item image urls, grouped by their respective symbol 
+ */
 const itemURLDict = {
     'c' : './images/copper_ore.png',
     'C' : './images/copper_ingot.png',
@@ -179,25 +158,44 @@ const itemURLDict = {
     'f' : './images/coal_ore.png',
     'B' : './images/bronze_ingot.png',
 }
-
+/**
+ * An object that stores all of the drill speeds. 
+ * Sorted by their respective symbol
+ */
 const drillerSpeeds = {
-    'b' : 2,
-    'c' : 8,
-    'i' : 8,
-    'f' : 4, 
+    'b' : 2, // bronze drill speed
+    'c' : 8, // copper drill speed
+    'i' : 8, // iron drill speed
+    'f' : 4, // fuel/coal drill speed
 }
-let drillsDict = {
+/**
+ * An object that stores the respective drill
+ * building symbols grouped by their img url. A special
+ * object is used due to the logic that allows them to only
+ * be placed on their respective ore
+ */
+const drillsDict = {
     './images/copper_drill.gif' : 'c',
     './images/iron_drill.gif' : 'i',
     './images/coal_drill.gif' : 'f',
     './images/bronze_drill.gif' : 'b'
 }
-let currency = {
-    'f' : 0,
-    'C' : 0,
-    'I' : 0,
-    'B' : 0
+/**
+ * An object that stores all of the currencies that the 
+ * user has.
+ */
+const currency = {
+    'f' : 0, // coal
+    'C' : 0, // copper ingots
+    'I' : 0, // iron ingots
+    'B' : 0 // bronze ingots
 }
+
+/**
+ * An object who stores all of the prices (logically) 
+ * for any inputted building. Can mutate to change the prices
+ * on different items dynamically
+ */
 const prices = {
     '<' : {'f': 5},
     '>' : {'f': 5},
@@ -214,9 +212,15 @@ const prices = {
     '=' : {'C': 10},
     'a' : {'I': 400}
 }
+/**
+ * An object that stores all of the html for the resepective currencies
+ */
 const currencyHTML = {}
 
-
+/**
+ * Depending on the currencies in the "currency" object, we add the html dynamically
+ * for the resepective currencies. This shows up in the top right corner
+ */
 for(let key in currency){
     let td = document.createElement("td");
     let img = document.createElement("img");
@@ -234,6 +238,10 @@ for(let key in currency){
     document.getElementById('currencyTable').appendChild(td);
 }
 
+/**
+ * Function which updates the prices within the HTML to match
+ * that in the "currency" object
+ */
 function reloadCurrencyHTML(){
     for(let k in currencyHTML){
         currencyHTML[k].innerHTML = currency[k];
@@ -241,7 +249,13 @@ function reloadCurrencyHTML(){
 }
 
 
-
+/**
+ * Determines if the user can affort a certain building
+ * based on the amount of currency and price of input build
+ * item
+ * @param {String} buildSymbol 
+ * @returns {Boolean}
+ */
 function canAfford(buildSymbol){
     let price = prices[buildSymbol];
     if(price == undefined) return true;
@@ -250,31 +264,21 @@ function canAfford(buildSymbol){
     }
     return true;
 }
-
+/**
+ * Converts url to its respective building symbol. The function is 
+ * kind of redundant, because of the urlBuildingDict object but prevents
+ * potential mutation of the urlBuildingDict
+ * @param {String} url 
+ * @returns {String}
+ */
 function urlToBuildingName(url){
     return urlBuildingDict[url];
-    /*
-    switch(url){
-        case 'images/copper_drill.gif': return 'c';
-        case 'images/iron_drill.gif': return 'i';
-        case 'images/coal_drill.gif': return 'f';
-        case 'images/bronze_drill.gif': return 'b';
-        case 'images/smelter.gif': return 's';
-        case 'images/depot.png': return 'd';
-        case 'images/conveyor_east.gif': return '>';
-        case 'images/conveyor_south.gif': return 'v';
-        case 'images/conveyor_west.gif': return '<';
-        case 'images/conveyor_north.gif': return '^';
-        case 'images/launcher_east.gif': return ')';
-        case 'images/launcher_south.gif': return 'u';
-        case 'images/launcher_west.gif': return '(';
-        case 'images/launcher_north.gif': return 'n';
-        case 'images/splitter.png': return '=';
-        case 'images/alloyer.gif': return 'a';
-        case 'images/blank.png': return undefined;
-    }*/
 }
 
+/**
+ * Object that stores the respective buildings symbols
+ * keyed with the input image url
+ */
 const urlBuildingDict = {
     './images/copper_drill.gif': 'c',
     './images/iron_drill.gif': 'i',
@@ -294,15 +298,22 @@ const urlBuildingDict = {
     './images/alloyer.gif': 'a',
     './images/blank.png': undefined,
 }
-
-let inverseBuildingDict = {
+/**
+ * The inverse version of the above object that gets generated by the for loop
+ */
+const inverseBuildingDict = {
 }
 
+
+// generating the inverse key value pairs based on the buildingDict
 for(let k in urlBuildingDict){
     inverseBuildingDict[urlBuildingDict[k]] = k;
 }
 
-
+/**
+ * Function that does all that is required to set the players
+ * build mode to remove
+ */
 function removeMode(){
     label.innerHTML = "";
     selectorPrev.src = "./images/blank.png"
@@ -311,14 +322,27 @@ function removeMode(){
 }
 
 
-const label = document.getElementById("selectorLabel");
 
 
-
+/**
+ * Function who changes which building
+ * the user has selected. 
+ * @param {String} imgSrc 
+ */
 function placeMode(imgSrc = "./images/blank.png"){
-    let labelText = imgSrc.replace("./images/", "").replace(".gif", "").replace(".png", "").replace("blank", "").replace("_"," ");
+    // generate the text displayed in the selector label
+    let labelText = imgSrc
+                    .replace("./images/", "")
+                    .replace(".gif", "")
+                    .replace(".png", "")
+                    .replace("blank", "")
+                    .replace("_"," ");
+
+    // determine building symbol of the imgSrc
     let asBuild = urlToBuildingName(imgSrc);
+    // determine the price of said bulding
     let price = prices[asBuild];
+    // if the price exists, then display the price in the label
     if (price!=undefined){
         labelText+=`<br>`
         for(let type in price){
@@ -329,6 +353,7 @@ function placeMode(imgSrc = "./images/blank.png"){
             labelText+=`${price[type]} ${typeText}(s)`
         }
     }
+    // setting the label's html to the labelText string
     label.innerHTML = labelText;
     selectMode = "place"
     selectorPrev.src = imgSrc;
@@ -336,11 +361,17 @@ function placeMode(imgSrc = "./images/blank.png"){
     selector.dataset.mode = "place";
 }
 
+
+// an interval that repeatedly places if the user is pressing left mouse
 setInterval(()=>{
     if(INPUT.mouse0) place();
 },10)
 
+/**
+ * Function for handling user placement
+ */
 function place(){
+    // getting the building symbol that the usr is placing
     let buildingName = urlToBuildingName(selectorSRC);
     if (selectMode == "place"){
         // place mode
@@ -353,20 +384,36 @@ function place(){
     }
 }
 
+/** Function who tries to place a given building at a given coordinate
+ * @param {Number} x 
+ * @param {Number} y 
+ * @param {String} symbol 
+ */
 function placeTile(x, y, symbol){
+
+
+    // ----------------- CANT PLACE CHECKS ----------------- 
+    // If coord is not on map
     if (!isCoord(x,y)){
         selectorPrev.src = './images/out_of_range.png';
         return;
     }
+    // If can't place building at coordinate
     if (!canPlace(x,y,symbol)){
         selectorPrev.src = './images/cant_place.png'
         return;
     }
+    // If can't afford given building
     if (!canAfford(symbol)){
         selectorPrev.src = './images/poor.png';
         return;
     }
+
     if (depotLimit(symbol)) return;
+
+    // ----------------- CANT PLACE CHECKS ----------------- 
+
+
     // if there is already a tile built, then don't place
     if (builds[x][y] != undefined) return;
     let tile = document.getElementById(`bx${x}y${y}`);
@@ -385,7 +432,11 @@ function placeTile(x, y, symbol){
         currencyHTML[type].innerHTML = currency[type];
     }
 }
-
+/** Function which, if the symbol is a depot, will return
+ * depending if there is a depot or not
+ * @param {String} symbol 
+ * @returns {Boolean}
+ */
 function depotLimit(symbol){
     if(symbol != 'd') return false;
     if(isDepot) return true;
@@ -398,6 +449,12 @@ function removeDepot(symbol){
     isDepot = false;
 }
 
+/** Determines if the given building can be built at a given location
+ * @param {Number} x 
+ * @param {Number} y 
+ * @param {String} symbol 
+ * @returns 
+ */
 function canPlace(x,y,symbol){
     let mapTile = map[x][y];     
     if (mapTile == undefined){
