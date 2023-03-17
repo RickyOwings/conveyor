@@ -548,6 +548,9 @@ window.addEventListener('mousemove',(event)=>{
 cameraMove();
 cameraScale();
 
+/**
+ * Function that limits the camera position based of the MAX_DIST const
+ */
 function limitCamPos(){
     if (cameraPosition[0] > MAX_DIST) cameraPosition[0] = MAX_DIST;
     if (cameraPosition[0] < -MAX_DIST) cameraPosition[0] = -MAX_DIST;
@@ -555,12 +558,20 @@ function limitCamPos(){
     if (cameraPosition[1] < -MAX_DIST) cameraPosition[1] = -MAX_DIST;
 }
 
+/**
+ * Function that limits the camera zoom based on the MIN and MAX ZOOM levels
+ */
 function limitCamZoom(){
     if (cameraZoom > MAX_ZOOM) cameraZoom = MAX_ZOOM;
     if (cameraZoom < MIN_ZOOM) cameraZoom = MIN_ZOOM;
 }
 
 
+/** Moves the selector position based on
+ * the position of the mouse cursor on the
+ * screen
+ * @param {Event} event 
+ */
 function updateSelectorPos(event){
     let x = event.x - window.innerWidth / 2;
     let y = event.y - window.innerHeight / 2;
@@ -582,8 +593,7 @@ function updateSelectorPos(event){
 
 
 
-
-// KEYBINDS
+//#region INPUT
 window.addEventListener('keydown', (event)=>{
     let camMoved = false; // if action that moves camera is done, then move the camera
     switch(event.key){
@@ -659,7 +669,10 @@ window.addEventListener('keyup', (event)=>{
         INPUT.mouse0 = false
     }
 })
-
+/**
+ * Function that sets the css transition of the selector
+ * to nothing. Used when using the arrow keys
+ */
 function instantSelectorMove(){
     let temp = selector.style.transition;
     selector.style.transition = "transform 0s";
@@ -669,16 +682,25 @@ function instantSelectorMove(){
         label.style.transition = temp;
     },20)
 }
+/**
+ * Function that updates the "game" div's css transform based on the camera position and zoom
+ */
 function cameraMove(){
     // update game styles
     game.style.transform = `translate(${Math.round(-cameraPosition[0] * cameraZoom)/cameraZoom+0.5}px, ${Math.round(-cameraPosition[1] * cameraZoom)/cameraZoom+0.5}px)`
 
 }
+/**
+ * Function that updates the "game" div's css scale based on the "cameraZoom"
+ */
 function cameraScale(){
     game.style.scale = cameraZoom;
 }
-
-
+//#endregion
+/**
+ * Initializes all of the map tiles to the scene based on the "map" 2D Array.
+ * Appends img elements to the "game" div
+ */
 function initMapTiles(){
     for(let x = 0; x < MAP_SIZE; x++){
         for(let y = 0; y < MAP_SIZE; y++){
@@ -707,18 +729,28 @@ function initMapTiles(){
         }
     }
 }
-
+/**
+ * Initializes all of the build tiles based on the "builds" 2D array.
+ */
 function initBuildTiles(){
     for(let x = 0; x < MAP_SIZE; x++){
         for(let y = 0; y < MAP_SIZE; y++){
             let src = inverseBuildingDict[builds[x][y]];
             if (!src) continue;
             createBuildIMG(x,y,src);
+            /**
+             * When smelting, if you save the game, the setTimeout for the smelting process is not saved in the
+             * JSON file. Instead, when you load a game, all of the items that were smelting get deleted. I could
+             * implement a way to work around this, but this is just way more simple to implement... + the smelting
+             * times are not too long anyways
+             */
             if (buildData[x][y] == 'smelting') buildData[x][y] = [];
         }
     }
 }
-
+/**
+ * Function that initializes all of the items to the scene based on the "items" 2D array
+ */
 function initItems(){
     for(let x = 0; x < MAP_SIZE; x++){
         for(let y = 0; y < MAP_SIZE; y++){
@@ -729,7 +761,13 @@ function initItems(){
 }
 
 
-
+/** Function that, based on a position and src, generates a HTML
+ * img element that represents a building
+ * @param {Number} x 
+ * @param {Number} y 
+ * @param {String} src 
+ * @returns 
+ */
 function createBuildIMG(x,y,src){
     let img = document.createElement("img");
     img.classList.add("buildTile");
@@ -743,10 +781,19 @@ function createBuildIMG(x,y,src){
 }
 
 initMapTiles();
-
+/**
+ * Time in ms for which the "itemLoop" function is run
+ */
 let TICK_MS = 1000/32;
 
+/**
+ * Boolean value that is true if the itemLoop function is in the process
+ * of running
+ */
 let runningItemLoop = false;
+/**
+ * Function that runs through all of the game logic
+ */
 function itemLoop(){
     runningItemLoop = true;
     // iterating through the different buildings, doing different
@@ -788,7 +835,13 @@ function itemLoop(){
 setTimeout(itemLoop, TICK_MS);
 
 
-
+/** Function that, based on the "buildingSymbol" and the position,
+ * runs through the logic for the drill
+ * @param {Number} x 
+ * @param {Number} y 
+ * @param {String} buildingSymbol 
+ * @returns 
+ */
 function drillerLogic(x,y,buildingSymbol){
     let symbol;
     if (buildingSymbol == 'b'){
@@ -811,8 +864,18 @@ function drillerLogic(x,y,buildingSymbol){
     new itemGraphic(ox, oy, symbol);
 }
 
-
+/** Is a function so that if the "TICK_MS" is mutated, the SMELT_TIME
+ * will update along with it
+ * @returns {Number}
+ */
 let SMELT_TIME = ()=> TICK_MS * 32;
+
+
+/** A function that runs through the logic for the smelter
+ * @param {Number} x 
+ * @param {Number} y 
+ * @returns 
+ */
 function smelterLogic(x,y){
     if(buildData[x][y] == "smelting") return;
     if (buildData[x][y] == undefined) buildData[x][y] = [];
@@ -835,6 +898,12 @@ function smelterLogic(x,y){
     }, SMELT_TIME())
 }
 
+
+/** Function that runs through the logic for the alloyer
+ * @param {Number} x 
+ * @param {Number} y 
+ * @returns 
+ */
 function alloyerLogic(x,y){
     if(buildData[x][y] == "smelting") return;
     if (buildData[x][y] == undefined) buildData[x][y] = [];
@@ -857,15 +926,23 @@ function alloyerLogic(x,y){
     }, SMELT_TIME())
 }
 
-
+/**
+ * An array that stores all of the itemGraphic objects in order to be iterated upon
+ */
 let itemGList = [];
 
+/**
+ * A function that culls all of the itemGraphics that are deemed to be garbage
+ */
 function garbageCollection(){
     itemGList = itemGList.filter((item)=>{
         return !item.garbage
     });
 }
-
+/**
+ * Class that stores all of the logic for the items in the scene. 
+ * Used a class so that it can retain the html for css transitions
+ */
 class itemGraphic{
     garbage = false;
     constructor(x, y, symbol){
@@ -874,6 +951,15 @@ class itemGraphic{
         this.y = y;
         items[x][y] = symbol;
         this.symbol = symbol;
+        /**
+         * When itemsGraphics are removed from the scene, instead of just throwing away
+         * the img elements, we actually set them to invisible and give them a class
+         * of "deadItem". That way, when we create a new itemGraphic that happens to have 
+         * the same src image as an available deadItem, we can use that instead of outright
+         * creating a new one. Sure, sometimes you might have a few extra invisible item graphics
+         * in the background that you cannot see, but this seemed to make the game run a little better
+         * since it is not outright creating new img elements every second
+         */
         let deadItems = document.getElementsByClassName("invisible deadItem");
         if(deadItems.length > 0){
             for(let i = 0; i < deadItems.length; i++){
@@ -894,6 +980,9 @@ class itemGraphic{
         game.appendChild(this.html);
         itemGList.push(this);
     }
+    /** Logic for moving an item. All of the logic for the conveyors and launchers are actually
+     * done from within the ItemGraphic class itself. This makes it more simple to do the logic
+     */
     move(){
         this.timer++;
         if (this.timer < 3) return;
@@ -956,6 +1045,9 @@ class itemGraphic{
             break;
         }
     }
+    /**
+     * Deposits the item into a building. Pushed the "buildData" array at it's position 
+     */
     deposit(){
         if (this.symbol == 'B') return;
         if (buildData[this.x][this.y] == undefined) buildData[this.x][this.y] = [];
@@ -963,18 +1055,32 @@ class itemGraphic{
         buildData[this.x][this.y].push(this.symbol);
         this.die();
     }
+    /** Update's the "items" 2d array 
+     * @param {Number} x 
+     * @param {Number} y 
+     */
     updateItemArray(x,y){
         items[this.x][this.y] = undefined;
         items[x][y] = this.symbol;
     }
+    /**
+     * Updates the css transforms for the item's html element
+     */
     updateTransforms(){
         this.html.style.transform = `translate(${this.x * TILE_SIZE}px, ${this.y * TILE_SIZE}px)`
     }
+    /**
+     * Removes the item "logically" from the scene
+     */
     die(){
         this.garbage = true;
         this.html.className = "invisible deadItem tile";
         items[this.x][this.y] = undefined;
     }
+    /** Function that, given a delta transform, tries to move to that specified location
+     * @param {Number[]} delta 
+     * @returns 
+     */
     trymove(delta){
         let target = [
             this.x + delta[0],
@@ -993,6 +1099,9 @@ class itemGraphic{
         this.y = target[1];
         this.updateTransforms();
     }
+    /**
+     * Function for storing items into the depot 
+     */
     stash(){
         if(!Object.keys(currency).includes(this.symbol)){
             this.die()
@@ -1004,7 +1113,12 @@ class itemGraphic{
     }
 }
 
-
+/** Function that checks if the given coordinate is full
+ * @param {Number} x 
+ * @param {Number} y 
+ * @param {String} symbol 
+ * @returns 
+ */
 function checkIfFull(x,y,symbol){
     // if the tile is not a smelter
     if(!['a','s'].includes(builds[x][y])) return false;
@@ -1048,7 +1162,13 @@ function checkIfFull(x,y,symbol){
     return false;
 }
 
-
+/** Function that returns an array of available outputs at a given
+ * tile
+ * @param {Number} x 
+ * @param {Number} y 
+ * @param {String} symbol 
+ * @returns {Number[][]}
+ */
 function availableOutputs(x,y, symbol){
     let outputs = [];
     // check west
@@ -1078,6 +1198,9 @@ function availableOutputs(x,y, symbol){
     if (outputs.length == 0) return false;
     return outputs;
 }
+/**
+ * Function that reads the inputted JSON file, loading it into the game
+ */
 function loadGame(){
     let saveFile = document.getElementById("saveFileInput");
     if (saveFile.files.length){
@@ -1090,6 +1213,10 @@ function loadGame(){
         reader.readAsBinaryString(saveFile.files[0]);
     }
 }
+/** Function that, given the json file as a string, removes all of the objects in the scene, and adds the things
+ * from the JSON file
+ * @param {String} data 
+ */
 function updateGameFromLoad(data){
     let dataJSON = JSON.parse(data);
     console.log(dataJSON);
@@ -1097,7 +1224,10 @@ function updateGameFromLoad(data){
     addNewThings(dataJSON);
 }
 
-
+/**
+ * Removes all of the HTML elements that have a "tile" class name.
+ * Also sets the "itemGList" array to an empty array
+ */
 function deleteAllThings(){
     let tiles = game.getElementsByClassName("tile");
     while (tiles.length) {
@@ -1106,7 +1236,10 @@ function deleteAllThings(){
     }
     itemGList = [];
 }
-
+/** Remakes the game based on the inputted JSON file
+ * @param {Object} dataJSON 
+ * @returns 
+ */
 function addNewThings(dataJSON){
     let newMap = dataJSON["map"];
     let newBuilds = dataJSON["builds"];
@@ -1134,7 +1267,10 @@ function addNewThings(dataJSON){
     reloadCurrencyHTML();
 }
 
-
+/** Checks the 2d arrays to make sure they are the right size
+ * @param {Array<Array>} array2d 
+ * @returns 
+ */
 function checkArray2d(array2d){
     for(let x in array2d){
         if (array2d[x].length != MAP_SIZE) return false;
