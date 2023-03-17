@@ -443,7 +443,10 @@ function depotLimit(symbol){
     isDepot = true;
     return false;
 }
-
+/**
+ * Function that, if the symbol is a depot, updates
+ * the "isDepot" variable to false if depot is removed
+ */
 function removeDepot(symbol){
     if(symbol != 'd') return;
     isDepot = false;
@@ -582,7 +585,7 @@ function updateSelectorPos(event){
 
 // KEYBINDS
 window.addEventListener('keydown', (event)=>{
-    let camMoved = false;
+    let camMoved = false; // if action that moves camera is done, then move the camera
     switch(event.key){
         case 'a': placeMode('./images/conveyor_west.gif'); break;
         case 'd': placeMode('./images/conveyor_east.gif'); break;
@@ -746,23 +749,13 @@ let TICK_MS = 1000/32;
 let runningItemLoop = false;
 function itemLoop(){
     runningItemLoop = true;
+    // iterating through the different buildings, doing different
+    // logic based on the building's symbol
     for(let x = 0; x < MAP_SIZE; x++){
         for(let y = 0; y < MAP_SIZE; y++){
             let building = builds[x][y];
             if (building == undefined) continue;
             switch (building){
-                case '>':
-
-                break;
-                case '<':
-                    
-                break;
-                case '^':
-                    
-                break;
-                case 'v':
-                    
-                break;
                 case 'c':
                     drillerLogic(x,y,'c');
                 break;
@@ -777,9 +770,6 @@ function itemLoop(){
                 break;
                 case 's':
                     smelterLogic(x,y);
-                break;
-                case 'd':
-                    
                 break;
                 case 'a':
                     alloyerLogic(x,y)
