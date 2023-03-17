@@ -184,7 +184,7 @@ const drillsDict = {
  * An object that stores all of the currencies that the 
  * user has.
  */
-const currency = {
+let currency = {
     'f' : 0, // coal
     'C' : 0, // copper ingots
     'I' : 0, // iron ingots
@@ -465,8 +465,12 @@ function canPlace(x,y,symbol){
     return false;
 }
 
-
+/** Function who tries to remove a tile at a given location
+ * @param {Number} x 
+ * @param {Number} y 
+ */
 function removeTile(x, y){
+    // checks if nothing exists at given tile
     if (builds[x][y] == undefined) return;
     let symbol = builds[x][y];
     removeDepot(symbol);
